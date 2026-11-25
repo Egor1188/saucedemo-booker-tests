@@ -19,7 +19,7 @@ npm run typecheck     # перевірка типів
 
 Облікові дані публічні й зашиті як дефолти; за потреби перевизначаються змінними `SAUCE_PASSWORD`, `BOOKER_USER`, `BOOKER_PASSWORD`.
 
-**CI:** `.github/workflows/tests.yml` запускається на кожен push і PR, окремими джобами для `ui` і `api`. HTML-звіт (`playwright-report-*`) і traces/скріншоти/JUnit (`test-results-*`) завантажуються як артефакти навіть при падінні.
+**CI:** `.github/workflows/tests.yml` запускається на кожен push і PR, окремими джобами для `ui` і `api`. HTML-звіт (`playwright-report-*`) і traces/скріншоти/JUnit (`test-results-*`) завантажуються як артефакти навіть при падінні. Крім того, після кожного push у `main` HTML-звіти публікуються на GitHub Pages і відкриваються за посиланням без скачування: https://egor1188.github.io/saucedemo-booker-tests/ (ui: `/ui/`, api: `/api/`).
 
 ## Структура
 

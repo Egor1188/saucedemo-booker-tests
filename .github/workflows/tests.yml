@@ -54,3 +54,47 @@ jobs:
           name: test-results-${{ matrix.project }}
           path: test-results/
           retention-days: 14
+
+  publish-report:
+    # Публікуємо HTML-звіти на GitHub Pages лише для push у main, навіть якщо тести впали
+    if: ${{ !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: playwright-report-*
+          path: reports
+
+      - name: Build site
+        run: |
+          mkdir site
+          for p in ui api; do
+            if [ -d "reports/playwright-report-$p" ]; then mv "reports/playwright-report-$p" "site/$p"; fi
+          done
+          {
+            echo '<!doctype html><meta charset="utf-8"><title>Playwright reports</title>'
+            echo '<h1>Playwright reports</h1><ul>'
+            for p in ui api; do
+              if [ -d "site/$p" ]; then echo "<li><a href=\"$p/\">$p tests</a></li>"; fi
+            done
+            echo '</ul>'
+          } > site/index.html
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
