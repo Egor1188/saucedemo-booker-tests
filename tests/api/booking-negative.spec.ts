@@ -51,6 +51,19 @@ test.describe('Негативні кейси API', () => {
     expect(res.status()).toBe(400);
   });
 
+  test('BUG-API-04: totalprice нечислового типу має відхилятись з 400, а не зберігатись як null', async ({ request }) => {
+    test.fail(true, 'BUG-API-04: totalprice: "abc" (за apidoc — Number) приймається з 200 і зберігається як null');
+    const api = new BookingClient(request);
+    const res = await api.create({ ...makeBooking(), totalprice: 'abc' });
+
+    // прибираємо за собою до перевірки: якщо бронювання створилось, воно не має лишитись на стенді
+    if (res.ok()) {
+      const created = await res.json();
+      await api.delete(created.bookingid, await api.getToken());
+    }
+    expect(res.status()).toBe(400);
+  });
+
   test('BUG-API-02: успішне видалення має повертати 200 або 204, а не 201 Created', async ({ request }) => {
     test.fail(true, 'BUG-API-02: DELETE відповідає 201 Created (ресурс не створюється, а видаляється)');
     const api = new BookingClient(request);
