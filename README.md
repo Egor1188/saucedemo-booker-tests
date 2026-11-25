@@ -1,0 +1,123 @@
+# saucedemo + restful-booker: автотести на Playwright / TypeScript
+
+Тестове завдання QA Automation Engineer (Middle): UI-тести для [saucedemo.com](https://www.saucedemo.com), API-тести для [restful-booker](https://restful-booker.herokuapp.com/apidoc), CI у GitHub Actions. Тести писались у парі з AI-агентом — див. [AI_WORKLOG.md](./AI_WORKLOG.md) та [CLAUDE.md](./CLAUDE.md).
+
+## Як запустити
+
+Потрібен Node.js 20+.
+
+```bash
+npm ci
+npx playwright install chromium   # лише для UI
+
+npm test              # усе
+npm run test:ui       # тільки saucedemo
+npm run test:api      # тільки restful-booker
+npm run report        # відкрити HTML-звіт
+npm run typecheck     # перевірка типів
+```
+
+Облікові дані публічні й зашиті як дефолти; за потреби перевизначаються змінними `SAUCE_PASSWORD`, `BOOKER_USER`, `BOOKER_PASSWORD`.
+
+**CI:** `.github/workflows/tests.yml` запускається на кожен push і PR, окремими джобами для `ui` і `api`. HTML-звіт (`playwright-report-*`) і traces/скріншоти/JUnit (`test-results-*`) завантажуються як артефакти навіть при падінні.
+
+## Структура
+
+```
+tests/
+  ui/
+    pages/            Page Object: Login, Inventory, Cart, Checkout
+    fixtures.ts       фікстури сторінок + loggedIn (залогінений standard_user)
+    login.spec.ts     catalog.spec.ts   cart.spec.ts   checkout.spec.ts
+    negative.spec.ts
+  api/
+    bookingClient.ts  обгортка над API + фабрика тестових даних
+    booking-flow.spec.ts
+    booking-negative.spec.ts
+```
+
+## Що покрито
+
+### UI — saucedemo (standard_user)
+| Область | Сценарій |
+|---|---|
+| Логін | успішний логін → каталог з 6 товарів; логаут скидає сесію |
+| Каталог | кожна картка має назву, опис, ціну у форматі `$X.XX`, кнопку «Add to cart» |
+| Сортування | A→Z, Z→A, ціна ↑, ціна ↓ (4 параметризовані тести, порядок перевіряється відносно відсортованої копії, а не хардкоду) |
+| Кошик | додавання/видалення оновлює бейдж і вміст; кошик переживає перезавантаження |
+| Чекаут | повний флоу; subtotal = сума цін з каталогу, total = subtotal + tax; після покупки кошик порожній |
+| Негативні | locked_out_user, невірний пароль, порожній логін/пароль; прямий перехід у каталог без логіну; чекаут без поштового індексу; чекаут з порожнім кошиком (баг) |
+
+### API — restful-booker
+| Сценарій | Перевірки |
+|---|---|
+| CRUD-флоу | auth → create → PUT → PATCH → delete → GET 404; дані після create/update звіряються через GET |
+| Негативні | невірні облікові дані не дають токена; PUT/DELETE без токена і з невалідним токеном → 403 і дані не змінились; неіснуючий id → 404; тіло без обовʼязкових полів (баг) |
+
+Тести з відомими багами позначені `test.fail()`: прогін лишається зеленим, поки баг відтворюється, а коли його полагодять — тест почервоніє і нагадає зняти маркер.
+
+## Що свідомо не покрито
+- **Інші користувачі saucedemo** (`problem_user`, `performance_glitch_user`, `error_user`, `visual_user`) — завдання про `standard_user`; негативний логін через `locked_out_user` — виняток.
+- **Крос-браузерність і мобільні вʼюпорти** — лише Chromium, щоб CI був швидким. Додати Firefox/WebKit — один рядок у `projects`.
+- **Візуальне регресійне тестування, a11y, продуктивність.**
+- **Сторінка деталей товару, меню «About» / «Reset App State»**, футер і соцмережі.
+- **API: фільтри `GET /booking?firstname=...&checkin=...`, `/ping`, XML-формат, Basic-auth** як альтернатива cookie-токену. Фільтри ненадійні на спільному публічному стенді: дані інших користувачів і скидання бази кожні ~10 хв роблять очікування на списки флейковими.
+- **Граничні значення полів бронювання** (від'ємна ціна, checkout раніше checkin, дуже довгі рядки) — кандидати на наступну ітерацію; API, судячи з усього, їх не валідує.
+
+## Знайдені баги
+
+### BUG-UI-01 — Можна оформити замовлення з порожнім кошиком
+**Серйозність:** Major · **Середовище:** saucedemo.com, standard_user, Chromium · **Тест:** `negative.spec.ts`
+
+**Кроки:**
+1. Залогінитись як `standard_user` / `secret_sauce`.
+2. Не додаючи товарів, відкрити кошик.
+3. Натиснути «Checkout», заповнити First Name, Last Name, Zip, натиснути «Continue».
+4. Натиснути «Finish».
+
+**Очікуваний результат:** кнопка «Checkout» неактивна або показується помилка «кошик порожній»; оформити замовлення неможливо.
+**Фактичний результат:** користувач проходить на сторінку Overview з Item total $0.00 і завершує «замовлення» з повідомленням «Thank you for your order!».
+
+---
+
+### BUG-API-01 — `POST /auth` з невірними обліковими даними повертає 200 OK
+**Серйозність:** Minor · **Тест:** `booking-negative.spec.ts`
+
+**Кроки:**
+```http
+POST /auth
+Content-Type: application/json
+
+{"username": "admin", "password": "wrong_password"}
+```
+**Очікуваний результат:** `401 Unauthorized`.
+**Фактичний результат:** `200 OK` з тілом `{"reason": "Bad credentials"}`. Клієнти, які перевіряють лише статус-код, вважатимуть авторизацію успішною.
+
+---
+
+### BUG-API-02 — `DELETE /booking/{id}` повертає 201 Created
+**Серйозність:** Trivial · **Тест:** `booking-flow.spec.ts` (крок «видалення»)
+
+**Кроки:** отримати токен, створити бронювання, виконати `DELETE /booking/{id}` з `Cookie: token=<token>`.
+**Очікуваний результат:** `200 OK` або `204 No Content`.
+**Фактичний результат:** `201 Created`. Поведінка збігається з офіційною документацією, тому тест фіксує фактичний код, але семантично `201` означає створення ресурсу — це вводить в оману клієнтів API.
+
+---
+
+### BUG-API-03 — Створення бронювання без обовʼязкових полів повертає 500
+**Серйозність:** Major · **Тест:** `booking-negative.spec.ts`
+
+**Кроки:**
+```http
+POST /booking
+Content-Type: application/json
+Accept: application/json
+
+{"totalprice": 150, "depositpaid": true,
+ "bookingdates": {"checkin": "2026-12-01", "checkout": "2026-12-05"}}
+```
+**Очікуваний результат:** `400 Bad Request` з описом, яких полів бракує.
+**Фактичний результат:** `500 Internal Server Error`. Помилка валідації вхідних даних обробляється як збій сервера.
+
+## Бонус (конвеєр «тест-кейс → Playwright-тест»)
+Не реалізовано в межах цього репозиторію.

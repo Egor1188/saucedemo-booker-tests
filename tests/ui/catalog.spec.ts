@@ -1,0 +1,45 @@
+import { test, expect } from './fixtures';
+import type { SortOption } from './pages/InventoryPage';
+
+test.describe('Каталог', () => {
+  test('кожна картка товару має назву, опис, ціну та кнопку "Add to cart"', async ({ loggedIn }) => {
+    const count = await loggedIn.items.count();
+    expect(count).toBe(6);
+
+    for (const item of await loggedIn.items.all()) {
+      await expect(item.getByTestId('inventory-item-name')).not.toBeEmpty();
+      await expect(item.getByTestId('inventory-item-desc')).not.toBeEmpty();
+      await expect(item.getByTestId('inventory-item-price')).toHaveText(/^\$\d+\.\d{2}$/);
+      await expect(item.getByRole('button', { name: 'Add to cart' })).toBeVisible();
+    }
+  });
+});
+
+test.describe('Сортування', () => {
+  const byName = (a: string, b: string) => a.localeCompare(b);
+  const cases: { option: SortOption; title: string; field: 'name' | 'price'; desc: boolean }[] = [
+    { option: 'az', title: 'Name (A to Z)', field: 'name', desc: false },
+    { option: 'za', title: 'Name (Z to A)', field: 'name', desc: true },
+    { option: 'lohi', title: 'Price (low to high)', field: 'price', desc: false },
+    { option: 'hilo', title: 'Price (high to low)', field: 'price', desc: true },
+  ];
+
+  for (const c of cases) {
+    test(`сортування "${c.title}"`, async ({ loggedIn }) => {
+      await loggedIn.sortBy(c.option);
+
+      if (c.field === 'name') {
+        const actual = await loggedIn.getNames();
+        const expected = [...actual].sort(byName);
+        if (c.desc) expected.reverse();
+        expect(actual).toEqual(expected);
+      } else {
+        const actual = await loggedIn.getPrices();
+        const expected = [...actual].sort((a, b) => (c.desc ? b - a : a - b));
+        expect(actual).toEqual(expected);
+      }
+      // обраний пункт відображається в селекті
+      await expect(loggedIn.sortSelect).toHaveValue(c.option);
+    });
+  }
+});
