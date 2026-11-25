@@ -24,12 +24,15 @@ npm run typecheck     # перевірка типів
 ## Структура
 
 ```
+testcases/           текстові тест-кейси (вхід конвеєра)
+scripts/             check-testcases.mjs — перевірка простежуваності й правил
 tests/
   ui/
     pages/            Page Object: Login, Inventory, Cart, Checkout
     fixtures.ts       фікстури сторінок + loggedIn (залогінений standard_user)
     login.spec.ts     catalog.spec.ts   cart.spec.ts   checkout.spec.ts
     negative.spec.ts
+    generated/        тести, згенеровані з testcases/ (теги [TC-UI-NNN])
   api/
     bookingClient.ts  обгортка над API + фабрика тестових даних
     booking-flow.spec.ts
@@ -119,5 +122,12 @@ Accept: application/json
 **Очікуваний результат:** `400 Bad Request` з описом, яких полів бракує.
 **Фактичний результат:** `500 Internal Server Error`. Помилка валідації вхідних даних обробляється як збій сервера.
 
-## Бонус (конвеєр «тест-кейс → Playwright-тест»)
-Не реалізовано в межах цього репозиторію.
+## Бонус: конвеєр «тест-кейс → Playwright-тест»
+
+Без нових залежностей і API-ключів: конвеєр складається з формату кейсу, інструкції для агента і перевірки.
+
+1. **Кейс** — текстовий файл `testcases/TC-UI-NNN-*.md` за шаблоном `testcases/TEMPLATE.md` (передумови, кроки, очікуваний результат).
+2. **Генерація** — навичка агента [`.claude/skills/testcase-to-playwright`](./.claude/skills/testcase-to-playwright/SKILL.md): читає кейс, `CLAUDE.md` і наявні Page Object, пише `tests/ui/generated/TC-UI-NNN.spec.ts` з тегом `[TC-UI-NNN]` у назві.
+3. **Перевірка** — `npm run check:testcases` (`scripts/check-testcases.mjs`, також у CI): кожен кейс має тест, кожен тег посилається на кейс, у тестах немає `waitForTimeout`, `nth()`, `page.locator`, `describe.serial`, XPath.
+
+Зараз так згенеровано TC-UI-001 (Continue Shopping зберігає кошик) і TC-UI-002 (видалення товару зі сторінки кошика). Обмеження: це не автономний генератор — тест пише агент, а скрипт лише гарантує простежуваність і дотримання правил; семантику (чи тест справді перевіряє кейс) ревʼюїть людина.

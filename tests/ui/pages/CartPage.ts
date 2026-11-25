@@ -1,4 +1,5 @@
 import { type Locator, type Page } from '@playwright/test';
+import { InventoryPage } from './InventoryPage';
 
 export class CartPage {
   readonly items: Locator;
@@ -15,6 +16,10 @@ export class CartPage {
 
   async open() {
     await this.page.goto('/cart.html');
+  }
+
+  removeItem(productName: string) {
+    return this.page.getByTestId(`remove-${InventoryPage.slug(productName)}`).click();
   }
 
   async checkout() {
