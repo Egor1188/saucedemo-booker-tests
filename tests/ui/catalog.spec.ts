@@ -1,8 +1,8 @@
 import { test, expect } from './fixtures';
 import type { SortOption } from './pages/InventoryPage';
 
-test.describe('Каталог', () => {
-  test('кожна картка товару має назву, опис, ціну та кнопку "Add to cart"', async ({ loggedIn }) => {
+test.describe('Catalog', () => {
+  test('every product card has a name, description, price and an "Add to cart" button', async ({ loggedIn }) => {
     const count = await loggedIn.items.count();
     expect(count).toBe(6);
 
@@ -15,7 +15,7 @@ test.describe('Каталог', () => {
   });
 });
 
-test.describe('Сортування', () => {
+test.describe('Sorting', () => {
   const byName = (a: string, b: string) => a.localeCompare(b);
   const cases: { option: SortOption; title: string; field: 'name' | 'price'; desc: boolean }[] = [
     { option: 'az', title: 'Name (A to Z)', field: 'name', desc: false },
@@ -25,7 +25,7 @@ test.describe('Сортування', () => {
   ];
 
   for (const c of cases) {
-    test(`сортування "${c.title}"`, async ({ loggedIn }) => {
+    test(`sorting by "${c.title}"`, async ({ loggedIn }) => {
       await loggedIn.sortBy(c.option);
 
       if (c.field === 'name') {

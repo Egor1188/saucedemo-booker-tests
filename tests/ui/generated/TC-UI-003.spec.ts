@@ -3,13 +3,13 @@ import { test, expect } from '../fixtures';
 // Згенеровано з testcases/TC-UI-003-back-home-after-order.md
 const PRODUCT = 'Sauce Labs Onesie';
 
-test('[TC-UI-003] Після завершення замовлення "Back Home" веде в каталог з порожнім кошиком', async ({
+test('[TC-UI-003] After an order, "Back Home" leads to the catalog with an empty cart', async ({
   page,
   loggedIn,
   cartPage,
   checkoutPage,
 }) => {
-  await test.step('додати товар у кошик і пройти чекаут до сторінки подяки', async () => {
+  await test.step('add a product and complete checkout up to the thank-you page', async () => {
     await loggedIn.addToCart(PRODUCT);
     await loggedIn.openCart();
     await cartPage.checkout();
@@ -20,16 +20,16 @@ test('[TC-UI-003] Після завершення замовлення "Back Hom
     await expect(checkoutPage.completeHeader).toHaveText('Thank you for your order!');
   });
 
-  await test.step('натиснути Back Home', async () => {
+  await test.step('click Back Home', async () => {
     await checkoutPage.backHomeButton.click();
   });
 
-  await test.step('відкрито сторінку каталогу', async () => {
+  await test.step('catalog page is open', async () => {
     await expect(page).toHaveURL(/inventory\.html/);
     await expect(loggedIn.items).toHaveCount(6);
   });
 
-  await test.step('бейдж кошика не відображається', async () => {
+  await test.step('cart badge is not displayed', async () => {
     await expect(loggedIn.cartBadge).toBeHidden();
   });
 });

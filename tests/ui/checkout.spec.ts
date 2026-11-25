@@ -1,8 +1,8 @@
 import { test, expect } from './fixtures';
 import { CheckoutPage } from './pages/CheckoutPage';
 
-test.describe('Чекаут', () => {
-  test('повний флоу покупки: сума в overview збігається з цінами товарів @smoke', async ({
+test.describe('Checkout', () => {
+  test('full purchase flow: overview totals match item prices @smoke', async ({
     page,
     loggedIn,
     cartPage,

@@ -1,6 +1,6 @@
 ---
 id: TC-UI-002
-title: Скасування чекауту на першому кроці повертає в кошик зі збереженим вмістом
+title: Cancelling checkout on step one returns to the cart with its contents preserved
 area: ui
 priority: medium
 ---

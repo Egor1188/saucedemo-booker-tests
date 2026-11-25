@@ -1,7 +1,7 @@
 import { test, expect, USERS, PASSWORD } from './fixtures';
 
-test.describe('Логін', () => {
-  test('standard_user логіниться і бачить каталог @smoke', async ({ page, loginPage, inventoryPage }) => {
+test.describe('Login', () => {
+  test('standard_user logs in and sees the catalog @smoke', async ({ page, loginPage, inventoryPage }) => {
     await loginPage.open();
     await loginPage.login(USERS.standard, PASSWORD);
 
@@ -10,7 +10,7 @@ test.describe('Логін', () => {
     await expect(inventoryPage.items).toHaveCount(6);
   });
 
-  test('сесія живе в cookie і вихід її скидає', async ({ page, loggedIn }) => {
+  test('session lives in a cookie and logout clears it', async ({ page, loggedIn }) => {
     await page.getByRole('button', { name: 'Open Menu' }).click();
     await page.getByTestId('logout-sidebar-link').click();
 

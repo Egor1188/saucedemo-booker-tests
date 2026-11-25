@@ -1,6 +1,6 @@
 ---
 id: TC-UI-003
-title: Після завершення замовлення "Back Home" веде в каталог з порожнім кошиком
+title: After an order, "Back Home" leads to the catalog with an empty cart
 area: ui
 priority: medium
 ---

@@ -1,27 +1,27 @@
 import { test, expect, USERS, PASSWORD } from './fixtures';
 
-test.describe('Негативні та граничні сценарії', () => {
+test.describe('Negative and edge cases', () => {
   const loginCases = [
     {
-      title: 'заблокований користувач',
+      title: 'locked-out user',
       username: USERS.lockedOut,
       password: PASSWORD,
       error: 'Epic sadface: Sorry, this user has been locked out.',
     },
     {
-      title: 'невірний пароль',
+      title: 'wrong password',
       username: USERS.standard,
       password: 'wrong_password',
       error: 'Epic sadface: Username and password do not match any user in this service',
     },
     {
-      title: 'порожній логін',
+      title: 'empty username',
       username: '',
       password: PASSWORD,
       error: 'Epic sadface: Username is required',
     },
     {
-      title: 'порожній пароль',
+      title: 'empty password',
       username: USERS.standard,
       password: '',
       error: 'Epic sadface: Password is required',
@@ -29,7 +29,7 @@ test.describe('Негативні та граничні сценарії', () =>
   ];
 
   for (const c of loginCases) {
-    test(`логін не проходить: ${c.title}`, async ({ page, loginPage }) => {
+    test(`login fails: ${c.title}`, async ({ page, loginPage }) => {
       await loginPage.open();
       await loginPage.login(c.username, c.password);
 
@@ -38,7 +38,7 @@ test.describe('Негативні та граничні сценарії', () =>
     });
   }
 
-  test('прямий перехід у каталог без логіну блокується', async ({ page, inventoryPage }) => {
+  test('direct navigation to the catalog without login is blocked', async ({ page, inventoryPage }) => {
     await inventoryPage.open();
     await expect(page).toHaveURL('https://www.saucedemo.com/');
     await expect(page.getByTestId('error')).toContainText(
@@ -46,7 +46,7 @@ test.describe('Негативні та граничні сценарії', () =>
     );
   });
 
-  test('чекаут не пускає далі без поштового індексу', async ({ page, loggedIn, cartPage, checkoutPage }) => {
+  test('checkout does not proceed without a postal code', async ({ page, loggedIn, cartPage, checkoutPage }) => {
     await loggedIn.addToCart('Sauce Labs Onesie');
     await loggedIn.openCart();
     await cartPage.checkout();
@@ -57,7 +57,7 @@ test.describe('Негативні та граничні сценарії', () =>
     await expect(page).toHaveURL(/checkout-step-one/);
   });
 
-  test('BUG-UI-01: не можна оформити замовлення з порожнім кошиком', async ({
+  test('BUG-UI-01: an order cannot be placed with an empty cart', async ({
     page,
     loggedIn,
     cartPage,

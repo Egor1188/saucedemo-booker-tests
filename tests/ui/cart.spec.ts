@@ -3,8 +3,8 @@ import { test, expect } from './fixtures';
 const BACKPACK = 'Sauce Labs Backpack';
 const BIKE_LIGHT = 'Sauce Labs Bike Light';
 
-test.describe('Кошик', () => {
-  test('додавання і видалення товарів оновлює бейдж і вміст кошика', async ({ loggedIn, cartPage }) => {
+test.describe('Cart', () => {
+  test('adding and removing items updates the badge and cart contents', async ({ loggedIn, cartPage }) => {
     await expect(loggedIn.cartBadge).toBeHidden();
 
     await loggedIn.addToCart(BACKPACK);
@@ -18,7 +18,7 @@ test.describe('Кошик', () => {
     await expect(cartPage.itemNames).toHaveText([BACKPACK]);
   });
 
-  test('вміст кошика зберігається після перезавантаження сторінки', async ({ page, loggedIn, cartPage }) => {
+  test('cart contents persist after page reload', async ({ page, loggedIn, cartPage }) => {
     await loggedIn.addToCart(BACKPACK);
     await loggedIn.addToCart(BIKE_LIGHT);
 

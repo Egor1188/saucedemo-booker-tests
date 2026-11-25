@@ -1,6 +1,6 @@
 ---
 id: TC-UI-001
-title: Додавання всіх товарів каталогу в кошик
+title: Add all catalog products to the cart
 area: ui
 priority: low
 ---

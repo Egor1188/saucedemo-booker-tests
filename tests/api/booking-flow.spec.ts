@@ -6,17 +6,17 @@ import { BookingClient, makeBooking, type Booking } from './bookingClient';
  * Кроки залежать одне від одного, тому це один тест з test.step, а не serial-набір:
  * так кожен прогін працює зі своїм бронюванням і тест можна безпечно паралелити.
  */
-test('CRUD-флоу бронювання @smoke', async ({ request }) => {
+test('booking CRUD flow @smoke', async ({ request }) => {
   const api = new BookingClient(request);
   const original = makeBooking();
   let token = '';
   let id = 0;
 
-  await test.step('авторизація повертає токен', async () => {
+  await test.step('auth returns a token', async () => {
     token = await api.getToken();
   });
 
-  await test.step('створення бронювання', async () => {
+  await test.step('create booking', async () => {
     const res = await api.create(original);
     expect(res.status()).toBe(200);
     const body = await res.json();
@@ -39,26 +39,26 @@ test('CRUD-флоу бронювання @smoke', async ({ request }) => {
     additionalneeds: 'Late checkout',
   };
 
-  await test.step('повне оновлення (PUT)', async () => {
+  await test.step('full update (PUT)', async () => {
     const res = await api.update(id, updated, token);
     expect(res.status()).toBe(200);
     expect(await res.json()).toEqual(updated);
     expect(await (await api.get(id)).json()).toEqual(updated);
   });
 
-  await test.step('часткове оновлення (PATCH)', async () => {
+  await test.step('partial update (PATCH)', async () => {
     const res = await api.partialUpdate(id, { firstname: 'Patched' }, token);
     expect(res.status()).toBe(200);
     expect(await res.json()).toEqual({ ...updated, firstname: 'Patched' });
   });
 
-  await test.step('видалення', async () => {
+  await test.step('delete booking', async () => {
     const res = await api.delete(id, token);
     // Точний код не фіксуємо: фактичний 201 Created — це BUG-API-02 (окремий тест у booking-negative).
     expect(res.ok()).toBe(true);
   });
 
-  await test.step('бронювання більше не існує', async () => {
+  await test.step('booking no longer exists', async () => {
     const res = await api.get(id);
     expect(res.status()).toBe(404);
   });
