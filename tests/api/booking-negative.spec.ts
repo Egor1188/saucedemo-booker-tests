@@ -13,7 +13,7 @@ test.describe('API negative cases', () => {
   });
 
   test('BUG-API-01: auth with invalid credentials should return 401', async ({ request }) => {
-    test.fail(true, 'BUG-API-01: /auth відповідає 200 OK на невірні облікові дані');
+    test.fail(true, 'BUG-API-01: /auth responds 200 OK to invalid credentials');
     const res = await new BookingClient(request).auth('admin', 'wrong_password');
     expect(res.status()).toBe(401);
   });
@@ -43,7 +43,7 @@ test.describe('API negative cases', () => {
   });
 
   test('BUG-API-03: creating a booking without required fields should return 400, not 500', async ({ request }) => {
-    test.fail(true, 'BUG-API-03: невалідне тіло запиту призводить до 500 Internal Server Error');
+    test.fail(true, 'BUG-API-03: an invalid request body causes 500 Internal Server Error');
     const { firstname, lastname, ...withoutNames } = makeBooking();
     void firstname;
     void lastname;
@@ -52,7 +52,7 @@ test.describe('API negative cases', () => {
   });
 
   test('BUG-API-04: non-numeric totalprice should be rejected with 400, not stored as null', async ({ request }) => {
-    test.fail(true, 'BUG-API-04: totalprice: "abc" (за apidoc — Number) приймається з 200 і зберігається як null');
+    test.fail(true, 'BUG-API-04: totalprice: "abc" (Number per apidoc) is accepted with 200 and stored as null');
     const api = new BookingClient(request);
     const res = await api.create({ ...makeBooking(), totalprice: 'abc' });
 
@@ -65,7 +65,7 @@ test.describe('API negative cases', () => {
   });
 
   test('BUG-API-02: successful delete should return 200 or 204, not 201 Created', async ({ request }) => {
-    test.fail(true, 'BUG-API-02: DELETE відповідає 201 Created (ресурс не створюється, а видаляється)');
+    test.fail(true, 'BUG-API-02: DELETE responds 201 Created (a resource is deleted, not created)');
     const api = new BookingClient(request);
     const token = await api.getToken();
     const created = await (await api.create(makeBooking())).json();

@@ -65,7 +65,7 @@ test.describe('Negative and edge cases', () => {
   }) => {
     // Відомий баг (див. README → BUG-UI-01). test.fail() робить тест "очікувано падаючим":
     // прогін зелений, поки баг живий, і почервоніє, коли баг полагодять — сигнал прибрати маркер.
-    test.fail(true, 'BUG-UI-01: чекаут дозволено з порожнім кошиком');
+    test.fail(true, 'BUG-UI-01: checkout is allowed with an empty cart');
 
     await loggedIn.openCart();
     await expect(cartPage.items).toHaveCount(0);
