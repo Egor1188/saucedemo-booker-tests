@@ -1,4 +1,5 @@
 import { type Locator, type Page } from '@playwright/test';
+import { InventoryLocators } from '../locators/InventoryLocators';
 
 export type SortOption = 'az' | 'za' | 'lohi' | 'hilo';
 
@@ -12,13 +13,13 @@ export class InventoryPage {
   readonly cartLink: Locator;
 
   constructor(private readonly page: Page) {
-    this.title = page.getByTestId('title');
-    this.items = page.getByTestId('inventory-item');
-    this.itemNames = page.getByTestId('inventory-item-name');
-    this.itemPrices = page.getByTestId('inventory-item-price');
-    this.sortSelect = page.getByTestId('product-sort-container');
-    this.cartBadge = page.getByTestId('shopping-cart-badge');
-    this.cartLink = page.getByTestId('shopping-cart-link');
+    this.title = page.getByTestId(InventoryLocators.Title);
+    this.items = page.getByTestId(InventoryLocators.Item);
+    this.itemNames = page.getByTestId(InventoryLocators.ItemName);
+    this.itemPrices = page.getByTestId(InventoryLocators.ItemPrice);
+    this.sortSelect = page.getByTestId(InventoryLocators.SortSelect);
+    this.cartBadge = page.getByTestId(InventoryLocators.CartBadge);
+    this.cartLink = page.getByTestId(InventoryLocators.CartLink);
   }
 
   async open() {
@@ -32,7 +33,7 @@ export class InventoryPage {
   }
 
   addToCart(productName: string) {
-    return this.page.getByTestId(`add-to-cart-${InventoryPage.slug(productName)}`).click();
+    return this.page.getByTestId(`${InventoryLocators.AddToCartPrefix}${InventoryPage.slug(productName)}`).click();
   }
 
   /** Додає всі товари каталогу; кнопки шукає за роллю, без залежності від slug назви. */
@@ -46,7 +47,7 @@ export class InventoryPage {
   }
 
   removeFromCart(productName: string) {
-    return this.page.getByTestId(`remove-${InventoryPage.slug(productName)}`).click();
+    return this.page.getByTestId(`${InventoryLocators.RemovePrefix}${InventoryPage.slug(productName)}`).click();
   }
 
   async sortBy(option: SortOption) {

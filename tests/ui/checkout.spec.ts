@@ -1,5 +1,6 @@
 import { test, expect } from './fixtures';
 import { CheckoutPage } from './pages/CheckoutPage';
+import { InventoryLocators } from './locators/InventoryLocators';
 
 test.describe('Checkout', () => {
   test('full purchase flow: overview totals match item prices @smoke', async ({
@@ -14,7 +15,7 @@ test.describe('Checkout', () => {
     const catalogPrices: number[] = [];
     for (const name of products) {
       const card = loggedIn.items.filter({ hasText: name });
-      const price = await card.getByTestId('inventory-item-price').innerText();
+      const price = await card.getByTestId(InventoryLocators.ItemPrice).innerText();
       catalogPrices.push(Number(price.replace('$', '')));
       await loggedIn.addToCart(name);
     }

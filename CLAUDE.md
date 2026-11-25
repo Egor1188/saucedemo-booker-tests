@@ -5,6 +5,7 @@
 ## Стек і структура
 - `@playwright/test`, TypeScript у `strict`-режимі. Жодних інших тест-раннерів і бібліотек без запиту.
 - UI: `tests/ui/` — Page Object у `tests/ui/pages/`, фікстури в `tests/ui/fixtures.ts`.
+- Значення `data-test` живуть в enum-ах `tests/ui/locators/<Page>Locators.ts` (по одному файлу на Page Object). Нові `data-test` додавай туди, а не рядком у Page Object чи тесті.
 - API: `tests/api/` — усі HTTP-виклики лише через `BookingClient` (`bookingClient.ts`), не через сирі `request.*` у тестах.
 - Проєкти Playwright: `ui` і `api` (див. `playwright.config.ts`).
 

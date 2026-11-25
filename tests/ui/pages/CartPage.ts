@@ -1,4 +1,5 @@
 import { type Locator, type Page } from '@playwright/test';
+import { CartLocators } from '../locators/CartLocators';
 
 export class CartPage {
   readonly items: Locator;
@@ -7,10 +8,10 @@ export class CartPage {
   readonly continueShoppingButton: Locator;
 
   constructor(private readonly page: Page) {
-    this.items = page.getByTestId('inventory-item');
-    this.itemNames = page.getByTestId('inventory-item-name');
-    this.checkoutButton = page.getByTestId('checkout');
-    this.continueShoppingButton = page.getByTestId('continue-shopping');
+    this.items = page.getByTestId(CartLocators.Item);
+    this.itemNames = page.getByTestId(CartLocators.ItemName);
+    this.checkoutButton = page.getByTestId(CartLocators.CheckoutButton);
+    this.continueShoppingButton = page.getByTestId(CartLocators.ContinueShoppingButton);
   }
 
   async open() {

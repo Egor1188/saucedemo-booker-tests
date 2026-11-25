@@ -1,4 +1,5 @@
 import { test, expect, USERS, PASSWORD } from './fixtures';
+import { LoginLocators } from './locators/LoginLocators';
 
 test.describe('Negative and edge cases', () => {
   const loginCases = [
@@ -41,7 +42,7 @@ test.describe('Negative and edge cases', () => {
   test('direct navigation to the catalog without login is blocked', async ({ page, inventoryPage }) => {
     await inventoryPage.open();
     await expect(page).toHaveURL('https://www.saucedemo.com/');
-    await expect(page.getByTestId('error')).toContainText(
+    await expect(page.getByTestId(LoginLocators.Error)).toContainText(
       "You can only access '/inventory.html' when you are logged in",
     );
   });
