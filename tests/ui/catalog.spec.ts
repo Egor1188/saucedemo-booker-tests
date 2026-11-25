@@ -11,7 +11,7 @@ test.describe('Catalog', () => {
       await expect(item.getByTestId(InventoryLocators.ItemName)).not.toBeEmpty();
       await expect(item.getByTestId(InventoryLocators.ItemDesc)).not.toBeEmpty();
       await expect(item.getByTestId(InventoryLocators.ItemPrice)).toHaveText(/^\$\d+\.\d{2}$/);
-      await expect(item.getByRole('button', { name: 'Add to cart' })).toBeVisible();
+      await expect(item.getByRole('button', { name: InventoryLocators.AddToCartButtonName })).toBeVisible();
     }
   });
 });

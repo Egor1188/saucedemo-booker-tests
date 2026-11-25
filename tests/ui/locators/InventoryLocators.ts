@@ -9,6 +9,9 @@ export enum InventoryLocators {
   CartBadge = 'shopping-cart-badge',
   CartLink = 'shopping-cart-link',
   LogoutLink = 'logout-sidebar-link',
+  /** Доступні імена (accessible name) для `getByRole('button', { name })` */
+  AddToCartButtonName = 'Add to cart',
+  OpenMenuButtonName = 'Open Menu',
   /** Префікс: повний data-test = `add-to-cart-<slug назви товару>` */
   AddToCartPrefix = 'add-to-cart-',
   /** Префікс: повний data-test = `remove-<slug назви товару>` */

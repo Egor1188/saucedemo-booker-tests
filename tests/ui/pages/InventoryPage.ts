@@ -38,7 +38,7 @@ export class InventoryPage {
 
   /** Додає всі товари каталогу; кнопки шукає за роллю, без залежності від slug назви. */
   async addAllToCart() {
-    const addButtons = this.items.getByRole('button', { name: 'Add to cart' });
+    const addButtons = this.items.getByRole('button', { name: InventoryLocators.AddToCartButtonName });
     const total = await addButtons.count();
     for (let i = 0; i < total; i++) {
       // після кліку кнопка стає "Remove", тож наступна "Add to cart" завжди перша

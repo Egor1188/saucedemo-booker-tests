@@ -13,7 +13,7 @@ test.describe('Login', () => {
   });
 
   test('session lives in a cookie and logout clears it', async ({ page, loggedIn }) => {
-    await page.getByRole('button', { name: 'Open Menu' }).click();
+    await page.getByRole('button', { name: InventoryLocators.OpenMenuButtonName }).click();
     await page.getByTestId(InventoryLocators.LogoutLink).click();
 
     await expect(page).toHaveURL('https://www.saucedemo.com/');
