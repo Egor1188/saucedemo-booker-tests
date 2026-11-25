@@ -54,9 +54,8 @@ test('CRUD-флоу бронювання @smoke', async ({ request }) => {
 
   await test.step('видалення', async () => {
     const res = await api.delete(id, token);
-    // Документація обіцяє 201 Created для DELETE — фіксуємо фактичну поведінку API.
-    // Семантично некоректний код описано в README як BUG-API-02.
-    expect(res.status()).toBe(201);
+    // Точний код не фіксуємо: фактичний 201 Created — це BUG-API-02 (окремий тест у booking-negative).
+    expect(res.ok()).toBe(true);
   });
 
   await test.step('бронювання більше не існує', async () => {

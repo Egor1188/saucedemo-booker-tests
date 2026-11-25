@@ -50,4 +50,13 @@ test.describe('Негативні кейси API', () => {
     const res = await new BookingClient(request).create(withoutNames);
     expect(res.status()).toBe(400);
   });
+
+  test('BUG-API-02: успішне видалення має повертати 200 або 204, а не 201 Created', async ({ request }) => {
+    test.fail(true, 'BUG-API-02: DELETE відповідає 201 Created (ресурс не створюється, а видаляється)');
+    const api = new BookingClient(request);
+    const token = await api.getToken();
+    const created = await (await api.create(makeBooking())).json();
+    const res = await api.delete(created.bookingid, token);
+    expect([200, 204]).toContain(res.status());
+  });
 });
