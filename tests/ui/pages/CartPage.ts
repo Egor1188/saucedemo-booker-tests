@@ -1,4 +1,4 @@
-import { type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import { CartLocators } from '../locators/CartLocators';
 
 export class CartPage {
@@ -20,5 +20,10 @@ export class CartPage {
 
   async checkout() {
     await this.checkoutButton.click();
+  }
+
+  /** У кошику рівно ці товари в цьому порядку. */
+  async expectItems(names: string[]) {
+    await expect(this.itemNames).toHaveText(names);
   }
 }

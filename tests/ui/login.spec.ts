@@ -4,13 +4,11 @@ import { byRole } from './locators/byRole';
 import { LoginLocators } from './locators/LoginLocators';
 
 test.describe('Login', () => {
-  test('standard_user logs in and sees the catalog @smoke', async ({ page, loginPage, inventoryPage }) => {
+  test('standard_user logs in and sees the catalog @smoke', async ({ loginPage, inventoryPage }) => {
     await loginPage.open();
     await loginPage.login(USERS.standard, PASSWORD);
 
-    await expect(page).toHaveURL(/\/inventory\.html$/);
-    await expect(inventoryPage.title).toHaveText('Products');
-    await expect(inventoryPage.items).toHaveCount(6);
+    await inventoryPage.expectOpen();
   });
 
   test('session lives in a cookie and logout clears it', async ({ page, loggedIn }) => {

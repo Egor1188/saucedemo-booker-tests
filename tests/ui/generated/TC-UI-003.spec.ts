@@ -16,8 +16,7 @@ test('[TC-UI-003] After an order, "Back Home" leads to the catalog with an empty
     await checkoutPage.fillInfo({ firstName: 'Ivan', lastName: 'Petrenko', postalCode: '01001' });
     await expect(page).toHaveURL(/checkout-step-two\.html/);
     await checkoutPage.finishButton.click();
-    await expect(page).toHaveURL(/checkout-complete\.html/);
-    await expect(checkoutPage.completeHeader).toHaveText('Thank you for your order!');
+    await checkoutPage.expectOrderComplete();
   });
 
   await test.step('click Back Home', async () => {
@@ -25,11 +24,10 @@ test('[TC-UI-003] After an order, "Back Home" leads to the catalog with an empty
   });
 
   await test.step('catalog page is open', async () => {
-    await expect(page).toHaveURL(/inventory\.html/);
-    await expect(loggedIn.items).toHaveCount(6);
+    await loggedIn.expectOpen();
   });
 
   await test.step('cart badge is not displayed', async () => {
-    await expect(loggedIn.cartBadge).toBeHidden();
+    await loggedIn.expectCartCount(0);
   });
 });

@@ -13,11 +13,11 @@ test('[TC-UI-001] Add all catalog products to the cart', async ({ loggedIn, cart
   });
 
   await test.step('cart badge shows the catalog product count', async () => {
-    await expect(loggedIn.cartBadge).toHaveText(String(CATALOG_SIZE));
+    await loggedIn.expectCartCount(CATALOG_SIZE);
   });
 
   await test.step('open the cart: same products in the same order', async () => {
     await loggedIn.openCart();
-    await expect(cartPage.itemNames).toHaveText(catalogNames);
+    await cartPage.expectItems(catalogNames);
   });
 });

@@ -1,4 +1,4 @@
-import { type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import { InventoryLocators, InventoryRoles } from '../locators/InventoryLocators';
 import { byRole } from '../locators/byRole';
 
@@ -66,5 +66,18 @@ export class InventoryPage {
 
   async openCart() {
     await this.cartLink.click();
+  }
+
+  /** Каталог відкрито: URL, заголовок і всі 6 товарів. */
+  async expectOpen() {
+    await expect(this.page).toHaveURL(/\/inventory\.html$/);
+    await expect(this.title).toHaveText('Products');
+    await expect(this.items).toHaveCount(6);
+  }
+
+  /** Бейдж кошика: 0 — відсутній, інакше показує вказану кількість. */
+  async expectCartCount(count: number) {
+    if (count === 0) await expect(this.cartBadge).toBeHidden();
+    else await expect(this.cartBadge).toHaveText(String(count));
   }
 }

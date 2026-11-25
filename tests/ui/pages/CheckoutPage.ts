@@ -1,4 +1,4 @@
-import { type Locator, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import { CheckoutLocators } from '../locators/CheckoutLocators';
 
 export interface CustomerInfo {
@@ -52,5 +52,11 @@ export class CheckoutPage {
     const m = text.match(/\$(\d+(?:\.\d+)?)/);
     if (!m) throw new Error(`Cannot parse money from "${text}"`);
     return Number(m[1]);
+  }
+
+  /** Замовлення оформлено: сторінка завершення з повідомленням подяки. */
+  async expectOrderComplete() {
+    await expect(this.page).toHaveURL(/checkout-complete/);
+    await expect(this.completeHeader).toHaveText('Thank you for your order!');
   }
 }

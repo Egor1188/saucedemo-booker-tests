@@ -36,8 +36,7 @@ test.describe('Checkout', () => {
     expect(total).toBeCloseTo(subtotal + tax, 2);
 
     await checkoutPage.finishButton.click();
-    await expect(page).toHaveURL(/checkout-complete/);
-    await expect(checkoutPage.completeHeader).toHaveText('Thank you for your order!');
-    await expect(loggedIn.cartBadge).toBeHidden();
+    await checkoutPage.expectOrderComplete();
+    await loggedIn.expectCartCount(0);
   });
 });

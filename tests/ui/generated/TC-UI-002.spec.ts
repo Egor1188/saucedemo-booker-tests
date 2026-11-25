@@ -25,6 +25,6 @@ test('[TC-UI-002] Cancelling checkout on step one returns to the cart with its c
   });
 
   await test.step('the added product remains in the cart', async () => {
-    await expect(cartPage.itemNames).toHaveText([PRODUCT]);
+    await cartPage.expectItems([PRODUCT]);
   });
 });
