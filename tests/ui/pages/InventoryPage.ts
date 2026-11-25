@@ -27,11 +27,22 @@ export class InventoryPage {
 
   /** "Sauce Labs Backpack" -> "sauce-labs-backpack" (формат data-test кнопок saucedemo) */
   static slug(productName: string): string {
-    return productName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    // saucedemo лишає у data-test крапки й дужки ("test.allthethings()-t-shirt-(red)"), міняє лише пробіли
+    return productName.toLowerCase().replace(/\s+/g, '-');
   }
 
   addToCart(productName: string) {
     return this.page.getByTestId(`add-to-cart-${InventoryPage.slug(productName)}`).click();
+  }
+
+  /** Додає всі товари каталогу; кнопки шукає за роллю, без залежності від slug назви. */
+  async addAllToCart() {
+    const addButtons = this.items.getByRole('button', { name: 'Add to cart' });
+    const total = await addButtons.count();
+    for (let i = 0; i < total; i++) {
+      // після кліку кнопка стає "Remove", тож наступна "Add to cart" завжди перша
+      await addButtons.first().click();
+    }
   }
 
   removeFromCart(productName: string) {

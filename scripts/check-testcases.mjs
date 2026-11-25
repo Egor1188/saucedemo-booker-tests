@@ -39,10 +39,15 @@ for (const file of specs) {
   }
   for (const [re, name] of forbidden) if (re.test(text)) errors.push(`${file}: заборонено ${name}`);
 }
-for (const [id, file] of cases) if (!tagged.has(id)) errors.push(`${file}: немає тесту з тегом [${id}]`);
+// CHECK_ONLY=TC-UI-003 — під час генерації одного кейсу не вимагати тестів для ще не згенерованих
+for (const [id, file] of cases) if (!tagged.has(id) && (!process.env.CHECK_ONLY || process.env.CHECK_ONLY === id)) errors.push(`${file}: немає тесту з тегом [${id}]`);
 
 if (errors.length) {
   console.error(errors.map((e) => `✗ ${e}`).join('\n'));
   process.exit(1);
 }
-console.log(`✓ ${cases.size} тест-кейс(ів), усі мають тест; заборонених патернів немає`);
+console.log(
+  process.env.CHECK_ONLY
+    ? `✓ ${process.env.CHECK_ONLY}: тест є; заборонених патернів немає`
+    : `✓ ${cases.size} тест-кейс(ів), усі мають тест; заборонених патернів немає`,
+);

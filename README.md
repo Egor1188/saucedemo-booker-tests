@@ -124,10 +124,28 @@ Accept: application/json
 
 ## Бонус: конвеєр «тест-кейс → Playwright-тест»
 
-Без нових залежностей і API-ключів: конвеєр складається з формату кейсу, інструкції для агента і перевірки.
+Скрипт на Node без залежностей, модель — агент Claude Code у headless-режимі (`claude -p`).
 
-1. **Кейс** — текстовий файл `testcases/TC-UI-NNN-*.md` за шаблоном `testcases/TEMPLATE.md` (передумови, кроки, очікуваний результат).
-2. **Генерація** — навичка агента [`.claude/skills/testcase-to-playwright`](./.claude/skills/testcase-to-playwright/SKILL.md): читає кейс, `CLAUDE.md` і наявні Page Object, пише `tests/ui/generated/TC-UI-NNN.spec.ts` з тегом `[TC-UI-NNN]` у назві.
-3. **Перевірка** — `npm run check:testcases` (`scripts/check-testcases.mjs`, також у CI): кожен кейс має тест, кожен тег посилається на кейс, у тестах немає `waitForTimeout`, `nth()`, `page.locator`, `describe.serial`, XPath.
+```bash
+claude login                                   # один раз
+npm run generate -- testcases/TC-UI-003-add-all-products.md
+```
 
-Зараз так згенеровано TC-UI-001 (Continue Shopping зберігає кошик) і TC-UI-002 (видалення товару зі сторінки кошика). Обмеження: це не автономний генератор — тест пише агент, а скрипт лише гарантує простежуваність і дотримання правил; семантику (чи тест справді перевіряє кейс) ревʼюїть людина.
+Що робить [`scripts/generate-test.mjs`](./scripts/generate-test.mjs):
+1. Збирає промпт: інструкція зі скіла [`testcase-to-playwright`](./.claude/skills/testcase-to-playwright/SKILL.md) + текст кейсу (`testcases/TC-UI-NNN-*.md`, формат — `testcases/TEMPLATE.md`).
+2. Запускає `claude -p` з обмеженим набором інструментів (читання, запис, `npx playwright test`, `npm run`). Агент читає Page Object, пише `tests/ui/generated/TC-UI-NNN.spec.ts` і сам ганяє тест.
+3. **Незалежно від агента** перевіряє результат: `check:testcases` (кожен кейс має тест з тегом `[TC-ID]`, у тестах немає `waitForTimeout`, `nth()`, `page.locator`, `describe.serial`, XPath), `typecheck`, запуск згенерованого тесту. Падіння на будь-якому кроці — код виходу ≠ 0, скрипт нічого не підправляє за агента.
+
+Генерація запускається локально (потрібен вхід в акаунт Claude). У CI йде лише `check:testcases`.
+
+### Приклади (реальні прогони)
+
+| Вхід | Що згенерувалось | Пройшов? | Що довелось правити руками |
+|---|---|---|---|
+| [TC-UI-003](./testcases/TC-UI-003-add-all-products.md): додати всі товари в кошик | [`TC-UI-003.spec.ts`](./tests/ui/generated/TC-UI-003.spec.ts) + метод `addAllToCart()` у `InventoryPage` | Так, з першого запуску скрипта | Нічого в тесті. Агент сам знайшов, що `InventoryPage.slug()` (мій код) ламається на товарі «Test.allTheThings() T-Shirt (Red)»: у реальному `data-test` лишаються крапка й дужки. Я підтвердив це на живій сторінці й виправив `slug()` (див. AI_WORKLOG) |
+| [TC-UI-004](./testcases/TC-UI-004-cancel-checkout.md): Cancel у чекауті повертає в кошик | [`TC-UI-004.spec.ts`](./tests/ui/generated/TC-UI-004.spec.ts) + `cancelButton` у `CheckoutPage` | Так | Один рядок у Page Object: агент написав `this.error =page...` без пробілу (форматування) — виправив вручну |
+| [TC-UI-005](./testcases/TC-UI-005-back-home-after-order.md): «Back Home» після замовлення | [`TC-UI-005.spec.ts`](./tests/ui/generated/TC-UI-005.spec.ts) + `backHomeButton` у `CheckoutPage` | Так | Нічого |
+
+TC-UI-001 і TC-UI-002 написано раніше вручну в сесії з агентом, до появи скрипта; вони лежать там само й проходять ту саму перевірку.
+
+**Обмеження.** Проходження тесту не доводить, що він перевіряє саме те, що в кейсі: це ревʼю робить людина (я переглянув усі три тести). Селектори, яких агент не бачив у наявних Page Object, він підбирає сам (`cancel`, `back-to-products`) і підтверджує лише тим, що тест пройшов.
