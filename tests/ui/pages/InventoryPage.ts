@@ -1,5 +1,6 @@
 import { type Locator, type Page } from '@playwright/test';
-import { InventoryLocators } from '../locators/InventoryLocators';
+import { InventoryLocators, InventoryRoles } from '../locators/InventoryLocators';
+import { byRole } from '../locators/byRole';
 
 export type SortOption = 'az' | 'za' | 'lohi' | 'hilo';
 
@@ -38,7 +39,7 @@ export class InventoryPage {
 
   /** Додає всі товари каталогу; кнопки шукає за роллю, без залежності від slug назви. */
   async addAllToCart() {
-    const addButtons = this.items.getByRole('button', { name: InventoryLocators.AddToCartButtonName });
+    const addButtons = byRole(this.items, InventoryRoles.AddToCartButton);
     const total = await addButtons.count();
     for (let i = 0; i < total; i++) {
       // після кліку кнопка стає "Remove", тож наступна "Add to cart" завжди перша

@@ -1,3 +1,5 @@
+import { type RoleLocator } from './byRole';
+
 /** Значення атрибута `data-test` на сторінці каталогу (і в її шапці/меню). */
 export enum InventoryLocators {
   Title = 'title',
@@ -9,11 +11,14 @@ export enum InventoryLocators {
   CartBadge = 'shopping-cart-badge',
   CartLink = 'shopping-cart-link',
   LogoutLink = 'logout-sidebar-link',
-  /** Доступні імена (accessible name) для `getByRole('button', { name })` */
-  AddToCartButtonName = 'Add to cart',
-  OpenMenuButtonName = 'Open Menu',
   /** Префікс: повний data-test = `add-to-cart-<slug назви товару>` */
   AddToCartPrefix = 'add-to-cart-',
   /** Префікс: повний data-test = `remove-<slug назви товару>` */
   RemovePrefix = 'remove-',
 }
+
+/** Локатори за роллю та доступним імʼям — для використання через `byRole()`. */
+export const InventoryRoles = {
+  AddToCartButton: { role: 'button', name: 'Add to cart' },
+  OpenMenuButton: { role: 'button', name: 'Open Menu' },
+} as const satisfies Record<string, RoleLocator>;

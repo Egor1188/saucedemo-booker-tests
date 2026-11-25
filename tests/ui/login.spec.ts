@@ -1,5 +1,6 @@
 import { test, expect, USERS, PASSWORD } from './fixtures';
-import { InventoryLocators } from './locators/InventoryLocators';
+import { InventoryLocators, InventoryRoles } from './locators/InventoryLocators';
+import { byRole } from './locators/byRole';
 import { LoginLocators } from './locators/LoginLocators';
 
 test.describe('Login', () => {
@@ -13,7 +14,7 @@ test.describe('Login', () => {
   });
 
   test('session lives in a cookie and logout clears it', async ({ page, loggedIn }) => {
-    await page.getByRole('button', { name: InventoryLocators.OpenMenuButtonName }).click();
+    await byRole(page, InventoryRoles.OpenMenuButton).click();
     await page.getByTestId(InventoryLocators.LogoutLink).click();
 
     await expect(page).toHaveURL('https://www.saucedemo.com/');

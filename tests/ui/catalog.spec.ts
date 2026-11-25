@@ -1,6 +1,7 @@
 import { test, expect } from './fixtures';
 import type { SortOption } from './pages/InventoryPage';
-import { InventoryLocators } from './locators/InventoryLocators';
+import { InventoryLocators, InventoryRoles } from './locators/InventoryLocators';
+import { byRole } from './locators/byRole';
 
 test.describe('Catalog', () => {
   test('every product card has a name, description, price and an "Add to cart" button', async ({ loggedIn }) => {
@@ -11,7 +12,7 @@ test.describe('Catalog', () => {
       await expect(item.getByTestId(InventoryLocators.ItemName)).not.toBeEmpty();
       await expect(item.getByTestId(InventoryLocators.ItemDesc)).not.toBeEmpty();
       await expect(item.getByTestId(InventoryLocators.ItemPrice)).toHaveText(/^\$\d+\.\d{2}$/);
-      await expect(item.getByRole('button', { name: InventoryLocators.AddToCartButtonName })).toBeVisible();
+      await expect(byRole(item, InventoryRoles.AddToCartButton)).toBeVisible();
     }
   });
 });

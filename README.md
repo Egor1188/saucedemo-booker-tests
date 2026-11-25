@@ -29,7 +29,8 @@ scripts/             check-testcases.mjs — перевірка простежу
 tests/
   ui/
     pages/            Page Object: Login, Inventory, Cart, Checkout
-    locators/         по enum-у з data-test на кожен Page Object (LoginLocators, ...)
+    locators/         по enum-у з data-test на кожен Page Object (LoginLocators, ...);
+                      локатори за роллю — обʼєкти { role, name } (InventoryRoles) + хелпер byRole()
     fixtures.ts       фікстури сторінок + loggedIn (залогінений standard_user)
     login.spec.ts     catalog.spec.ts   cart.spec.ts   checkout.spec.ts
     negative.spec.ts
