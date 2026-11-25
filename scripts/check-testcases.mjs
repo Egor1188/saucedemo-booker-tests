@@ -39,7 +39,7 @@ for (const file of specs) {
   }
   for (const [re, name] of forbidden) if (re.test(text)) errors.push(`${file}: заборонено ${name}`);
 }
-// CHECK_ONLY=TC-UI-003 — під час генерації одного кейсу не вимагати тестів для ще не згенерованих
+// CHECK_ONLY=TC-UI-001 — під час генерації одного кейсу не вимагати тестів для ще не згенерованих
 for (const [id, file] of cases) if (!tagged.has(id) && (!process.env.CHECK_ONLY || process.env.CHECK_ONLY === id)) errors.push(`${file}: немає тесту з тегом [${id}]`);
 
 if (errors.length) {

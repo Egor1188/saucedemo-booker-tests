@@ -1,6 +1,6 @@
 // Конвеєр "текстовий тест-кейс -> Playwright-тест" через headless-агента (claude -p).
 //
-//   node scripts/generate-test.mjs testcases/TC-UI-003-*.md [--model <model>]
+//   node scripts/generate-test.mjs testcases/TC-UI-001-*.md [--model <model>]
 //
 // 1) формує промпт: інструкція зі скіла + текст кейсу;
 // 2) запускає `claude -p` (агент сам читає Page Object, пише тест і ганяє його);

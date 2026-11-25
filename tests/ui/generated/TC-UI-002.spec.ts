@@ -1,9 +1,9 @@
 import { test, expect } from '../fixtures';
 
-// Згенеровано з testcases/TC-UI-004-cancel-checkout.md
+// Згенеровано з testcases/TC-UI-002-cancel-checkout.md
 const PRODUCT = 'Sauce Labs Backpack';
 
-test('[TC-UI-004] Скасування чекауту на першому кроці повертає в кошик зі збереженим вмістом', async ({
+test('[TC-UI-002] Скасування чекауту на першому кроці повертає в кошик зі збереженим вмістом', async ({
   page,
   loggedIn,
   cartPage,

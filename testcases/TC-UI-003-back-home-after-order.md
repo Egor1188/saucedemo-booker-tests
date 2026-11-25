@@ -1,5 +1,5 @@
 ---
-id: TC-UI-005
+id: TC-UI-003
 title: Після завершення замовлення "Back Home" веде в каталог з порожнім кошиком
 area: ui
 priority: medium

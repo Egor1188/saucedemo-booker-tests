@@ -1,5 +1,5 @@
 ---
-id: TC-UI-003
+id: TC-UI-001
 title: Додавання всіх товарів каталогу в кошик
 area: ui
 priority: low

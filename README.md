@@ -61,7 +61,7 @@ tests/
 - За **сценаріями** укладаємось у ліміт. UI-позитивних 7: логін, сесія/логаут, каталог, сортування, додавання/видалення в кошику, збереження кошика, чекаут. UI-негативних 3: невалідний логін, доступ без логіну, валідація форми чекауту. API-негативних 3: невірні облікові дані, запити без токена, неіснуючий id.
 - Решта — **параметризація**, а не нові сценарії: сортування це 4 тести одного сценарію (по одному на опцію), невалідний логін — 4 варіанти (заблокований, невірний пароль, порожній логін, порожній пароль).
 - Ще 5 тестів (BUG-UI-01, BUG-API-01/02/03/04) — це знайдені баги: за правилом проєкту їх не маскують, а лишають із правильним очікуванням і `test.fail()`.
-- 3 тести `[TC-UI-003..005]` у `tests/ui/generated/` — результат бонусного конвеєра, див. нижче.
+- 3 тести `[TC-UI-001..003]` у `tests/ui/generated/` — результат бонусного конвеєра, див. нижче.
 
 Тести з відомими багами позначені `test.fail()`: прогін лишається зеленим, поки баг відтворюється, а коли його полагодять — тест почервоніє і нагадає зняти маркер.
 
@@ -151,7 +151,7 @@ Accept: application/json
 
 ```bash
 claude login                                   # один раз
-npm run generate -- testcases/TC-UI-003-add-all-products.md
+npm run generate -- testcases/TC-UI-001-add-all-products.md
 ```
 
 Що робить [`scripts/generate-test.mjs`](./scripts/generate-test.mjs):
@@ -165,8 +165,8 @@ npm run generate -- testcases/TC-UI-003-add-all-products.md
 
 | Вхід | Що згенерувалось | Пройшов? | Що довелось правити руками |
 |---|---|---|---|
-| [TC-UI-003](./testcases/TC-UI-003-add-all-products.md): додати всі товари в кошик | [`TC-UI-003.spec.ts`](./tests/ui/generated/TC-UI-003.spec.ts) + метод `addAllToCart()` у `InventoryPage` | Так, з першого запуску скрипта | Нічого в тесті. Агент сам знайшов, що `InventoryPage.slug()` (мій код) ламається на товарі «Test.allTheThings() T-Shirt (Red)»: у реальному `data-test` лишаються крапка й дужки. Я підтвердив це на живій сторінці й виправив `slug()` (див. AI_WORKLOG) |
-| [TC-UI-004](./testcases/TC-UI-004-cancel-checkout.md): Cancel у чекауті повертає в кошик | [`TC-UI-004.spec.ts`](./tests/ui/generated/TC-UI-004.spec.ts) + `cancelButton` у `CheckoutPage` | Так | Один рядок у Page Object: агент написав `this.error =page...` без пробілу (форматування) — виправив вручну |
-| [TC-UI-005](./testcases/TC-UI-005-back-home-after-order.md): «Back Home» після замовлення | [`TC-UI-005.spec.ts`](./tests/ui/generated/TC-UI-005.spec.ts) + `backHomeButton` у `CheckoutPage` | Так | Нічого |
+| [TC-UI-001](./testcases/TC-UI-001-add-all-products.md): додати всі товари в кошик | [`TC-UI-001.spec.ts`](./tests/ui/generated/TC-UI-001.spec.ts) + метод `addAllToCart()` у `InventoryPage` | Так, з першого запуску скрипта | Нічого в тесті. Агент сам знайшов, що `InventoryPage.slug()` (мій код) ламається на товарі «Test.allTheThings() T-Shirt (Red)»: у реальному `data-test` лишаються крапка й дужки. Я підтвердив це на живій сторінці й виправив `slug()` (див. AI_WORKLOG) |
+| [TC-UI-002](./testcases/TC-UI-002-cancel-checkout.md): Cancel у чекауті повертає в кошик | [`TC-UI-002.spec.ts`](./tests/ui/generated/TC-UI-002.spec.ts) + `cancelButton` у `CheckoutPage` | Так | Один рядок у Page Object: агент написав `this.error =page...` без пробілу (форматування) — виправив вручну |
+| [TC-UI-003](./testcases/TC-UI-003-back-home-after-order.md): «Back Home» після замовлення | [`TC-UI-003.spec.ts`](./tests/ui/generated/TC-UI-003.spec.ts) + `backHomeButton` у `CheckoutPage` | Так | Нічого |
 
 **Обмеження.** Проходження тесту не доводить, що він перевіряє саме те, що в кейсі: це ревʼю робить людина (я переглянув усі три тести). Селектори, яких агент не бачив у наявних Page Object, він підбирає сам (`cancel`, `back-to-products`) і підтверджує лише тим, що тест пройшов.
